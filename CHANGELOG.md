@@ -3,6 +3,10 @@
 All notable changes to this project are documented here.
 
 ## [Unreleased]
+
+- Add the library: the passport with its sections always written (tools and versions, input and output files with their SHA-256, results of the checks, limitations and pending decisions), the canonical order and hash, the comparison with the files of a folder and the comparison of two passports.
+- Report, with stable codes `PHOENIX-PASS-001` to `PHOENIX-PASS-006`: bad hashes, unsafe paths, duplicates, tools without a version, files whose content changed and files that are missing.
+- Add the command line (`check`, `verify`, `hash`, `compare`, `hashfiles`) and a settings file. Run format, lints and tests of the Rust code on Linux and Windows in the CI.
 - **The workflows are hardened:** every action is pinned by its commit with its version in a comment, and the checkouts keep no credentials.
 
 ## [0.0.1] - The base of the repository

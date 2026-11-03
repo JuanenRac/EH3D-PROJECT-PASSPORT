@@ -6,7 +6,7 @@
 
 <p align="center"><a href="README.md">🇺🇸 English</a> | <a href="README_spa.md">🇪🇸 Español</a> | <a href="README_fra.md">🇫🇷 Français</a> | <a href="README_ita.md">🇮🇹 Italiano</a> | 🇩🇪 <b>Deutsch</b> | <a href="README_zho.md">🇨🇳 中文</a> | <a href="README_jpn.md">🇯🇵 日本語</a> | <a href="README_por.md">🇵🇹 Português</a></p>
 
-### EH3D-PROJECT-PASSPORT: geplant als ein Generator für einen speicherbaren, reproduzierbaren technischen Pass zur Prüfung eines ganzen Projekts. Noch kein Code.
+### EH3D-PROJECT-PASSPORT: der technische Pass eines Projekts: Werkzeuge, Ein- und Ausgabedateien mit ihren Hashes, Prüfungen, Einschränkungen und offene Entscheidungen. Früher Code.
 
 <p align="center">
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
@@ -19,7 +19,7 @@
 
 ---
 
-**Ehrlichkeitscheck - was heute tatsächlich läuft:** nichts. EH3D-PROJECT-PASSPORT ist nur geplant: Es gibt keinen Code, keine eigenen Tests, und es ist nie gelaufen. Vorhanden sind die Basis, die jedes Repository der Suite trägt, sowie Umfang, Anforderungen, Abhängigkeiten, Bedrohungsmodell und Entscheidungen in `docs/`.
+**Ehrlichkeitscheck - was heute tatsächlich läuft:** eine Rust-Bibliothek und eine Befehlszeile, die einen Pass lesen (eine JSON-Datei, deren Abschnitte immer geschrieben werden, auch wenn sie leer sind), fehlerhafte Hashes, unsichere Pfade, Duplikate und Werkzeuge ohne Version finden, den SHA-256 seines kanonischen Inhalts ausgeben, ihn mit den Dateien eines Ordners (der nur gelesen wird) vergleichen, um fehlende oder geänderte zu finden, zwei Pässe vergleichen und die Verweise von Dateien zum Schreiben eines Passes ausgeben. Alles lief nur mit Daten, die die eigenen Tests erzeugen. Es fehlen: der Generator, der einen Pass aus einem Projekt und seiner Historie baut, die Signatur und der Neuaufbau der Fertigungsdateien.
 
 ---
 
@@ -46,14 +46,14 @@ Jede Zeile ist ein Teil dieses Repositorys, und die Ampel sagt, wie weit er heut
 | Bereich | Stand | Was das hier bedeutet |
 |---|---|---|
 | Repository-Prüfungen | 🟡 | Die Repository-Prüfung, die Prüfung der Bilder und die 3 Tests der Basis laufen in der CI und bestehen. |
-| Tests | 🟠 | Nur die Basis hat Tests (3); der Code des Repositorys bekommt seine eigenen, sobald er geschrieben wird. |
+| Tests | 🟡 | Die 13 Tests des Rust-Codes und die 3 der Basis bestehen auf einem Rechner. Sie verwenden nur Daten, die die Tests selbst erzeugen. |
 | Echte Hardware | 🟠 | Auf keiner Maschine und keiner Platine ausgeführt: nichts hier wurde auf Hardware ausprobiert. |
-| Geplante Funktion | 🔴 | Nicht begonnen: Von der geplanten Funktion ist nichts geschrieben. |
-| Anforderungen | 🔴 | Alle Anforderungen sind nur geplant: Keine ist umgesetzt oder geprüft. |
+| Geplante Funktion | 🟠 | Geschrieben: die Abschnitte des Passes, die Prüfungen, der kanonische Hash, der Vergleich mit den Dateien eines Ordners und zwischen zwei Pässen. Nicht geschrieben: der Generator aus einem Projekt, der Neuaufbau der Fertigungsdateien und die optionale Signatur. |
+| Anforderungen | 🟠 | 5 der 6 Anforderungen sind im Prototyp; die optionale Signatur (PPAS-005) ist nur geplant. Keine ist validiert. |
 
 ## 🎯 Überblick
 
-* **Geplant:** EH3D-PROJECT-PASSPORT soll ein Generator für einen speicherbaren, reproduzierbaren technischen Pass zur Prüfung eines ganzen Projekts werden. Vorgesehen ist eine Bibliothek ohne Fenster mit Kommandozeile und, wo es passt, einer Art Server-Aufgabe. Nichts davon existiert bisher.
+* **Was es gibt:** eine Bibliothek und eine Befehlszeile ohne Fenster, die einen Pass prüfen (`check`), mit einem Ordner vergleichen (`verify`), seinen Hash ausgeben (`hash`), zwei Pässe vergleichen (`compare`) und Dateien hashen (`hashfiles`). **Geplant:** der Generator aus einem Projekt, der Neuaufbau der Fertigungsdateien, die optionale Signatur und eine Art Serveraufgabe.
 
 ## 🧩 Rolle in EH3D
 
@@ -105,6 +105,8 @@ EH3D-PROJECT-PASSPORT/
 │   ├── NOT_YET.md RULES.md                      Ideen für später und Regeln zum Schreiben von Code
 │   └── adr/                                     die angenommenen Entscheidungsprotokolle
 ├── AGENTS.md                                    Regeln für alle, die das Repository ändern
+├── src/                                         die Bibliothek und die Befehlszeile
+├── Cargo.toml  deny.toml                        Rust-Paket und Richtlinie der Abhängigkeiten
 ├── tools/                                       die Repository-Prüfung, ihre Tests und die Bild-Werkzeuge
 ├── images/                                      Banner und die Bilder von Architektur und Repository-Struktur
 ├── .github/                                     CI- und Dashboard-Workflows, Vorlagen für Issues und Pull Requests
@@ -121,7 +123,7 @@ EH3D-PROJECT-PASSPORT/
 
 **Bekannte Grenzen heute**
 
-* Nur geplant: Es gibt keinen Code, nichts wurde ausgeführt und keine Anforderung ist umgesetzt.
+* Früher Code: nur mit Daten der eigenen Tests ausgeführt; er baut keinen Pass aus einem Projekt und signiert nicht.
 
 **Als Nächstes**
 

@@ -6,7 +6,7 @@
 
 <p align="center"><a href="README.md">🇺🇸 English</a> | 🇪🇸 <b>Español</b> | <a href="README_fra.md">🇫🇷 Français</a> | <a href="README_ita.md">🇮🇹 Italiano</a> | <a href="README_deu.md">🇩🇪 Deutsch</a> | <a href="README_zho.md">🇨🇳 中文</a> | <a href="README_jpn.md">🇯🇵 日本語</a> | <a href="README_por.md">🇵🇹 Português</a></p>
 
-### EH3D-PROJECT-PASSPORT: planificado como un generador del pasaporte técnico, almacenable y reproducible, para auditar un proyecto completo. Todavía sin código.
+### EH3D-PROJECT-PASSPORT: el pasaporte técnico de un proyecto: herramientas, ficheros de entrada y de salida con sus hashes, comprobaciones, limitaciones y decisiones pendientes. Código inicial.
 
 <p align="center">
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
@@ -19,7 +19,7 @@
 
 ---
 
-**Comprobación de honestidad - lo que se ejecuta hoy:** nada. EH3D-PROJECT-PASSPORT solo está planificado: no tiene código, ni pruebas propias, y nunca se ha ejecutado. Lo que existe es la base que lleva todo repositorio de la suite, más el alcance, los requisitos, las dependencias, el modelo de amenazas y las decisiones escritos en `docs/`.
+**Comprobación de honestidad - lo que se ejecuta hoy:** una biblioteca de Rust y una línea de comandos que leen un pasaporte (un fichero JSON cuyas secciones se escriben siempre, aunque estén vacías), encuentran hashes incorrectos, rutas inseguras, duplicados y herramientas sin versión, muestran el SHA-256 de su contenido canónico, lo comparan con los ficheros de una carpeta (que solo se lee) para hallar los que faltan o han cambiado, comparan dos pasaportes y muestran las referencias de ficheros para escribir uno. Todo se ha ejecutado solo con datos hechos por sus propias pruebas. Lo que no existe: el generador que construye un pasaporte desde un proyecto y su historial, la firma y la reconstrucción de los ficheros de fabricación.
 
 ---
 
@@ -46,14 +46,14 @@ Cada línea es una parte de este repositorio y la luz dice hasta dónde llega ho
 | Área | Estado | Qué significa aquí |
 |---|---|---|
 | Comprobaciones del repositorio | 🟡 | La comprobación del repositorio, la de las imágenes y las 3 pruebas de la base se ejecutan en el CI y pasan. |
-| Pruebas | 🟠 | Solo la base tiene pruebas (3); el código del repositorio tendrá las suyas a medida que se escriba. |
+| Pruebas | 🟡 | Las 13 pruebas del código Rust y las 3 de la base pasan en un ordenador. Usan solo datos hechos por las propias pruebas. |
 | Hardware real | 🟠 | No se ha ejecutado en ninguna máquina ni placa: nada de aquí se ha probado en hardware. |
-| Función planificada | 🔴 | Sin empezar: nada de la función planificada está escrito. |
-| Requisitos | 🔴 | Todos los requisitos están solo planificados: ninguno está implementado ni verificado. |
+| Función planificada | 🟠 | Escrito: las secciones del pasaporte, las comprobaciones, el hash canónico, la comparación con los ficheros de una carpeta y entre dos pasaportes. Sin escribir: el generador desde un proyecto, la reconstrucción de los ficheros de fabricación y la firma opcional. |
+| Requisitos | 🟠 | 5 de los 6 requisitos están en prototipo; la firma opcional (PPAS-005) solo está planificada. Ninguno está validado. |
 
 ## 🎯 Resumen
 
-* **Planificado:** EH3D-PROJECT-PASSPORT pretende ser un generador del pasaporte técnico, almacenable y reproducible, para auditar un proyecto completo. Se planea como una biblioteca sin ventana, con interfaz de línea de comandos y, cuando proceda, un tipo de tarea del servidor. Nada de esto existe todavía.
+* **Lo que existe:** una biblioteca y una línea de comandos, sin ventana, que comprueban un pasaporte (`check`), lo comparan con una carpeta (`verify`), muestran su hash (`hash`), comparan dos pasaportes (`compare`) y calculan el hash de ficheros (`hashfiles`). **Planificado:** el generador desde un proyecto, la reconstrucción de los ficheros de fabricación, la firma opcional y un tipo de tarea del servidor.
 
 ## 🧩 Papel en EH3D
 
@@ -105,6 +105,8 @@ EH3D-PROJECT-PASSPORT/
 │   ├── NOT_YET.md RULES.md                      ideas para más adelante y reglas para escribir código
 │   └── adr/                                     los registros de decisiones aceptadas
 ├── AGENTS.md                                    reglas para quien cambia el repositorio
+├── src/                                         la biblioteca y la línea de comandos
+├── Cargo.toml  deny.toml                        paquete de Rust y política de dependencias
 ├── tools/                                       la comprobación del repositorio, sus pruebas y las herramientas de las imágenes
 ├── images/                                      banner y las imágenes de Arquitectura y Estructura del repositorio
 ├── .github/                                     flujos de CI y del panel, plantillas de issues y pull requests
@@ -121,7 +123,7 @@ EH3D-PROJECT-PASSPORT/
 
 **Límites conocidos hoy**
 
-* Solo planificado: no hay código, no se ha ejecutado nada y ningún requisito está implementado.
+* Código inicial: solo se ha ejecutado con datos hechos por sus propias pruebas; no construye un pasaporte desde un proyecto ni firma.
 
 **Siguiente**
 

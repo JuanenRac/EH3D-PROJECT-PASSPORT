@@ -6,7 +6,7 @@
 
 <p align="center">🇺🇸 <b>English</b> | <a href="README_spa.md">🇪🇸 Español</a> | <a href="README_fra.md">🇫🇷 Français</a> | <a href="README_ita.md">🇮🇹 Italiano</a> | <a href="README_deu.md">🇩🇪 Deutsch</a> | <a href="README_zho.md">🇨🇳 中文</a> | <a href="README_jpn.md">🇯🇵 日本語</a> | <a href="README_por.md">🇵🇹 Português</a></p>
 
-### EH3D-PROJECT-PASSPORT: planned as a generator of a storable, reproducible technical passport to audit a whole project. No code yet.
+### EH3D-PROJECT-PASSPORT: the technical passport of a project: tools, input and output files with their hashes, checks, limitations and pending decisions. Early code.
 
 <p align="center">
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
@@ -19,7 +19,7 @@
 
 ---
 
-**Honesty check - what actually runs today:** nothing. EH3D-PROJECT-PASSPORT is only planned: it has no code, no tests of its own and has never run. What exists is the base every repository of the suite carries, plus the written scope, requirements, dependencies, threat model and decisions in `docs/`.
+**Honesty check - what actually runs today:** a Rust library and a command line that read a passport (a JSON file whose sections are always written, even when empty), find bad hashes, unsafe paths, duplicates and tools without a version, print the SHA-256 of its canonical content, compare it with the files of a folder (which is only read) to find the ones that are missing or changed, compare two passports and print the references of files for writing one. All of it has run only on data made by its own tests. What does not exist: the generator that builds a passport from a project and its history, the signature and the rebuilding of the manufacturing files.
 
 ---
 
@@ -46,14 +46,14 @@ Each line is one part of this repository and the light says how far it is today.
 | Area | State | What it means here |
 |---|---|---|
 | Repository checks | 🟡 | The repository check, the check of the pictures and the 3 tests of the base run in CI and pass. |
-| Tests | 🟠 | Only the base has tests (3); the code of the repository will get its own as it is written. |
+| Tests | 🟡 | 13 tests of the Rust code and the 3 of the base pass on a computer. They use only data made by the tests themselves. |
 | Real hardware | 🟠 | Not run on any machine or board: nothing here has been tried on hardware. |
-| Planned function | 🔴 | Not started: none of the planned function has been written. |
-| Requirements | 🔴 | Every requirement is only planned: none is implemented or verified. |
+| Planned function | 🟠 | Written: the sections of the passport, the checks, the canonical hash, the comparison with the files of a folder and between two passports. Not written: the generator from a project, the rebuilding of the manufacturing files and the optional signature. |
+| Requirements | 🟠 | 5 of the 6 requirements are at prototype; the optional signature (PPAS-005) is only planned. None is validated. |
 
 ## 🎯 Overview
 
-* **Planned:** EH3D-PROJECT-PASSPORT is meant to be a generator of a storable, reproducible technical passport to audit a whole project. It is planned as a library without a window, with a command-line interface and, when it applies, a kind of server task. None of this exists yet.
+* **What exists:** a library and a command line, without a window, that check a passport (`check`), compare it with a folder (`verify`), print its hash (`hash`), compare two passports (`compare`) and hash files (`hashfiles`). **Planned:** the generator from a project, the rebuilding of the manufacturing files, the optional signature and a kind of server task.
 
 ## 🧩 Role in EH3D
 
@@ -105,6 +105,8 @@ EH3D-PROJECT-PASSPORT/
 │   ├── NOT_YET.md RULES.md                      ideas left for later and rules for writing code
 │   └── adr/                                     the accepted decision records
 ├── AGENTS.md                                    rules for anyone who changes the repository
+├── src/                                         the library and the command line
+├── Cargo.toml  deny.toml                        Rust package and policy of the dependencies
 ├── tools/                                       the repository check, its tests and the picture tools
 ├── images/                                      banner and the Architecture and Repository Structure pictures
 ├── .github/                                     CI and dashboard workflows, issue and pull-request templates
@@ -121,7 +123,7 @@ EH3D-PROJECT-PASSPORT/
 
 **Known limits today**
 
-* Planned only: there is no code, nothing has been run and no requirement is implemented.
+* Early code: it has only run on data made by its own tests; it does not build a passport from a project and it does not sign.
 
 **Next**
 

@@ -1,0 +1,28 @@
+[package]
+name = "eh3d-project-passport"
+version = "0.0.1"
+edition = "2021"
+rust-version = "1.88"
+description = "Technical passport of a project: the tools, rules, inputs and outputs of a design with their hashes, stored and checkable against the files"
+license = "GPL-3.0-or-later"
+repository = "https://github.com/JuanenRac/EH3D-PROJECT-PASSPORT"
+readme = "README.md"
+
+[lib]
+name = "eh3d_project_passport"
+path = "src/lib.rs"
+
+[[bin]]
+name = "eh3d-project-passport"
+path = "src/main.rs"
+
+[dependencies]
+# sha2: the SHA-256 of the files and of the passport
+sha2 = "0.10"
+# serde / serde_json: the passport is plain JSON
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+
+[dev-dependencies]
+tempfile = "3"
