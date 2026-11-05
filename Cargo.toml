@@ -1,6 +1,6 @@
 [package]
 name = "eh3d-project-passport"
-version = "0.0.1"
+version = "0.0.2"
 edition = "2021"
 rust-version = "1.88"
 description = "Technical passport of a project: the tools, rules, inputs and outputs of a design with their hashes, stored and checkable against the files"
