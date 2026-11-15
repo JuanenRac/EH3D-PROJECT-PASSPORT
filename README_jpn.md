@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Stack-Markdown%20%2B%20Python-blue.svg" alt="Markdown and Python">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Tests-3-2EA043.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.0.2-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.0.3-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -29,7 +29,7 @@
 
 | | |
 |---|---|
-| バージョン | `0.0.2` |
+| バージョン | `0.0.3` |
 | 成熟度 | 足場 |
 | テスト | 3 |
 | 技術スタック | Markdown, Python 3.10+ |
@@ -66,6 +66,14 @@ EH3D-PROJECT-PASSPORT は EH3D Fabrication Suite の PHOENIX ファミリーの�
 </p>
 
 このリポジトリの各部分の関係：誰が使い、何を持ち、何に依存するか。図は `docs/architecture.json` から描かれ、コードと照合されます。
+
+## 🖼️ スクリーンショット
+
+<p align="center">
+  <img src="images/screens/project-passport-01-cli.png" alt="ファイルの参照を書き出し、パスポートを検査し、変更されたファイルを見つけるコマンドライン" width="100%">
+</p>
+
+<p align="center"><em>コマンドライン：`hashfiles` はパスポート用のファイル参照を表示し、`check` は正しいパスポートに問題を見つけず（終了コード 0）、`verify` はファイルの内容がパスポートの記録と違うと `PHOENIX-PASS-005` を報告します（終了コード 1）。</em></p>
 
 ## 🚀 クイックスタート
 
