@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **A simulated project folder (`sim`):** a host twin that makes the files of a folder from a seed, writes them, breaks one on purpose (missing, one bit flipped, cut, grown, or replaced by a folder) and writes it back, so `verify` can be tried on every failure and its recovery with no real project; the same seed always gives the same files, faults and findings. Six new tests cover each fault, a seeded campaign repeated 25 times, the limit of the size to hash and the unsafe path. It has only run on a computer: no real project folder, drive failure or file-system error has been seen.
+
 ## [0.0.3] - Shared validation tools, a split CI and a pinned Rust toolchain
 
 - **A picture of the command line in the README:** `images/screens/project-passport-01-cli.png` shows `hashfiles`, `check` on a good passport and `verify` finding a file that changed, taken from the built program; it is shown in the eight READMEs.
