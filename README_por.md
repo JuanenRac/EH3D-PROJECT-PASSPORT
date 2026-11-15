@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Stack-Markdown%20%2B%20Python-blue.svg" alt="Markdown and Python">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Tests-3-2EA043.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.0.2-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.0.3-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -29,7 +29,7 @@
 
 | | |
 |---|---|
-| Versão | `0.0.2` |
+| Versão | `0.0.3` |
 | Maturidade | Estrutura inicial |
 | Testes | 3 |
 | Tecnologias | Markdown, Python 3.10+ |
@@ -66,6 +66,14 @@ EH3D-PROJECT-PASSPORT faz parte da família PHOENIX da EH3D Fabrication Suite. O
 </p>
 
 Como as partes deste repositório se encaixam: quem o usa, o que contém e de que depende. A imagem é desenhada a partir de `docs/architecture.json` e verificada com o código.
+
+## 🖼️ Capturas de ecrã
+
+<p align="center">
+  <img src="images/screens/project-passport-01-cli.png" alt="A linha de comandos a escrever referências de ficheiros, a verificar um passaporte e a encontrar um ficheiro que mudou" width="100%">
+</p>
+
+<p align="center"><em>A linha de comandos: `hashfiles` mostra as referências dos ficheiros para um passaporte, `check` não encontra nada de errado num passaporte correto (código de saída 0) e `verify` indica `PHOENIX-PASS-005` quando um ficheiro já não tem o conteúdo que o passaporte registou (código de saída 1).</em></p>
 
 ## 🚀 Início rápido
 

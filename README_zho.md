@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Stack-Markdown%20%2B%20Python-blue.svg" alt="Markdown and Python">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Tests-3-2EA043.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.0.2-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.0.3-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -29,7 +29,7 @@
 
 | | |
 |---|---|
-| 版本 | `0.0.2` |
+| 版本 | `0.0.3` |
 | 成熟度 | 脚手架 |
 | 测试 | 3 |
 | 技术栈 | Markdown, Python 3.10+ |
@@ -66,6 +66,14 @@ EH3D-PROJECT-PASSPORT 是 EH3D Fabrication Suite 的 PHOENIX 系列的一部分�
 </p>
 
 本仓库各部分如何协作：谁在使用它、它包含什么、它依赖什么。图片由 `docs/architecture.json` 绘制，并与代码核对。
+
+## 🖼️ 屏幕截图
+
+<p align="center">
+  <img src="images/screens/project-passport-01-cli.png" alt="命令行写出文件引用、检查护照并发现一个已变化的文件" width="100%">
+</p>
+
+<p align="center"><em>命令行：`hashfiles` 输出护照所需的文件引用，`check` 对正确的护照不报告任何问题（退出码 0），当某个文件的内容与护照记录不符时，`verify` 报告 `PHOENIX-PASS-005`（退出码 1）。</em></p>
 
 ## 🚀 快速开始
 
