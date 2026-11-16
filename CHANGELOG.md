@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **A file that is a symbolic link is not hashed by default:** the new setting `reject_symlinks` (on by default) makes `hash_file`, `hashfiles` and `verify` refuse a file that is a symbolic link, because the link could point outside the folder of the project; `reject_symlinks = off` follows links as before. A test covers both (on systems that have links).
 - **The hash of a file stops at the limit of bytes while it reads:** besides looking at the size first, the reading counts what it takes and refuses a file that grows, or a pipe or a device that says it is empty, once it passes `max_hashed_bytes`.
 
 - **The count of Rust tests in the README and in the status page is the real one.**

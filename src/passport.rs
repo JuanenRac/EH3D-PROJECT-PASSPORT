@@ -109,6 +109,16 @@ pub fn hash_file(path: &Path, config: &Config) -> Result<String, PassportError> 
         path: path.to_path_buf(),
         source,
     };
+    if config.reject_symlinks
+        && fs::symlink_metadata(path)
+            .map_err(io)?
+            .file_type()
+            .is_symlink()
+    {
+        return Err(PassportError::Symlink {
+            path: path.to_path_buf(),
+        });
+    }
     let size = fs::metadata(path).map_err(io)?.len();
     if size > config.max_hashed_bytes {
         return Err(PassportError::TooLarge {
@@ -504,6 +514,30 @@ mod tests {
             assert!(!is_safe_path(bad), "{bad:?}");
         }
         assert!(is_safe_path("a/b.c") && is_sha256(&sha('0')) && !is_sha256(&sha('G')));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn a_symbolic_link_is_refused_unless_the_settings_follow_links() {
+        let work = tempfile::tempdir().unwrap();
+        fs::write(work.path().join("real.bin"), b"data").unwrap();
+        std::os::unix::fs::symlink(work.path().join("real.bin"), work.path().join("link.bin"))
+            .unwrap();
+        let config = Config::default();
+        assert!(config.reject_symlinks);
+        assert!(matches!(
+            hash_file(&work.path().join("link.bin"), &config),
+            Err(PassportError::Symlink { .. })
+        ));
+        assert!(hash_file(&work.path().join("real.bin"), &config).is_ok());
+        let follow = Config {
+            reject_symlinks: false,
+            ..Config::default()
+        };
+        assert_eq!(
+            hash_file(&work.path().join("link.bin"), &follow).unwrap(),
+            hash_file(&work.path().join("real.bin"), &config).unwrap()
+        );
     }
 
     #[test]
