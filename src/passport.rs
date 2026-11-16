@@ -115,17 +115,33 @@ pub fn hash_file(path: &Path, config: &Config) -> Result<String, PassportError> 
             what: "file to hash",
         });
     }
-    let mut file = fs::File::open(path).map_err(io)?;
+    let file = fs::File::open(path).map_err(io)?;
+    // what is read is bounded too: a file that grows after its size was looked at, or a pipe or a device that says it is empty, stops at the limit
+    match hash_reader(file, config.max_hashed_bytes).map_err(io)? {
+        Some(hash) => Ok(hash),
+        None => Err(PassportError::TooLarge {
+            what: "file to hash",
+        }),
+    }
+}
+
+/// The SHA-256 of what a reader gives, read in blocks; `None` as soon as it gives more than `limit` bytes.
+fn hash_reader<R: Read>(mut reader: R, limit: u64) -> std::io::Result<Option<String>> {
     let mut hasher = Sha256::new();
     let mut block = vec![0u8; 64 * 1024];
+    let mut total: u64 = 0;
     loop {
-        let n = file.read(&mut block).map_err(io)?;
+        let n = reader.read(&mut block)?;
         if n == 0 {
             break;
         }
+        total += n as u64;
+        if total > limit {
+            return Ok(None);
+        }
         hasher.update(&block[..n]);
     }
-    Ok(hex(&hasher.finalize()))
+    Ok(Some(hex(&hasher.finalize())))
 }
 
 /// The references of the given files of a folder (sorted by path), for writing a passport. The folder is only read.
@@ -390,6 +406,20 @@ impl Passport {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn a_reader_that_never_ends_stops_at_the_limit() {
+        assert_eq!(
+            super::hash_reader(std::io::repeat(0), 1_000_000).unwrap(),
+            None
+        );
+        let abc = super::hash_reader(&b"abc"[..], 3).unwrap().unwrap();
+        assert_eq!(
+            abc,
+            "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+        );
+        assert_eq!(super::hash_reader(&b"abcd"[..], 3).unwrap(), None);
+    }
+
     use super::*;
 
     fn sha(byte: char) -> String {
