@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The hash of a file stops at the limit of bytes while it reads:** besides looking at the size first, the reading counts what it takes and refuses a file that grows, or a pipe or a device that says it is empty, once it passes `max_hashed_bytes`.
+
 - **The count of Rust tests in the README and in the status page is the real one.**
 
 - **`compare` also compares the checks, the limitations, the pending decisions, the project and the date:** two passports that differed only in a check (a verdict or the hash of its report), a limitation, a pending decision, the project name or the date compared as equal and the command exited with 0. They are now listed one line each, and a passport whose content differs in any other way is reported as `other content changed`. Tested for each section.
