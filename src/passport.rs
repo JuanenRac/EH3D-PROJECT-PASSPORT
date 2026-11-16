@@ -341,6 +341,49 @@ impl Passport {
                 out.push(format!("{section} added: {path}"));
             }
         }
+        let checks = |p: &Passport| -> BTreeMap<String, (String, String)> {
+            p.checks
+                .iter()
+                .map(|c| (c.name.clone(), (c.verdict.clone(), c.report_sha256.clone())))
+                .collect()
+        };
+        let (ca, cb) = (checks(&a), checks(&b));
+        for (name, (verdict_a, report_a)) in &ca {
+            match cb.get(name) {
+                None => out.push(format!("check removed: {name}")),
+                Some((verdict_b, report_b)) => {
+                    if verdict_b != verdict_a {
+                        out.push(format!("check changed: {name} {verdict_a} -> {verdict_b}"));
+                    } else if report_b != report_a {
+                        out.push(format!("check report changed: {name}"));
+                    }
+                }
+            }
+        }
+        for name in cb.keys().filter(|n| !ca.contains_key(*n)) {
+            out.push(format!("check added: {name}"));
+        }
+        for (section, la, lb) in [
+            ("limitation", &a.limitations, &b.limitations),
+            ("pending", &a.pending, &b.pending),
+        ] {
+            for text in la.iter().filter(|t| !lb.contains(t)) {
+                out.push(format!("{section} removed: {text}"));
+            }
+            for text in lb.iter().filter(|t| !la.contains(t)) {
+                out.push(format!("{section} added: {text}"));
+            }
+        }
+        if a.project != b.project {
+            out.push(format!("project changed: {} -> {}", a.project, b.project));
+        }
+        if a.created != b.created {
+            out.push(String::from("created changed"));
+        }
+        // a safety net: two passports with different content never compare as equal
+        if out.is_empty() && a.hash() != b.hash() {
+            out.push(String::from("other content changed"));
+        }
         out
     }
 }
@@ -572,6 +615,43 @@ mod tests {
             ]
         );
         assert!(a.compare(&a).is_empty());
+    }
+
+    #[test]
+    fn checks_limitations_pending_project_and_date_are_compared_too() {
+        let a = sample();
+        let mut b = sample();
+        assert!(a.compare(&b).is_empty());
+        b.project = "other".into();
+        b.created = Some("later".into());
+        b.limitations.push("a new limit".into());
+        b.pending.push("a new decision".into());
+        b.checks.push(CheckRef {
+            name: "extra".into(),
+            verdict: "pass".into(),
+            report_sha256: sha('1'),
+        });
+        let lines = a.compare(&b);
+        for want in [
+            "check added: extra",
+            "limitation added: a new limit",
+            "pending added: a new decision",
+            "created changed",
+        ] {
+            assert!(lines.iter().any(|l| l == want), "{want}: {lines:?}");
+        }
+        assert!(
+            lines.iter().any(|l| l.starts_with("project changed: ")),
+            "{lines:?}"
+        );
+        // a check that changes its verdict, or only its report
+        let c = sample();
+        let mut d = c.clone();
+        d.checks[0].verdict = "fail".into();
+        assert_eq!(c.compare(&d), vec!["check changed: rules pass -> fail"]);
+        let mut e = c.clone();
+        e.checks[0].report_sha256 = sha('3');
+        assert_eq!(c.compare(&e), vec!["check report changed: rules"]);
     }
 
     #[test]

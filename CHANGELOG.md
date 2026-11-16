@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **`compare` also compares the checks, the limitations, the pending decisions, the project and the date:** two passports that differed only in a check (a verdict or the hash of its report), a limitation, a pending decision, the project name or the date compared as equal and the command exited with 0. They are now listed one line each, and a passport whose content differs in any other way is reported as `other content changed`. Tested for each section.
+
 - **A simulated project folder (`sim`):** a host twin that makes the files of a folder from a seed, writes them, breaks one on purpose (missing, one bit flipped, cut, grown, or replaced by a folder) and writes it back, so `verify` can be tried on every failure and its recovery with no real project; the same seed always gives the same files, faults and findings. Six new tests cover each fault, a seeded campaign repeated 25 times, the limit of the size to hash and the unsafe path. It has only run on a computer: no real project folder, drive failure or file-system error has been seen.
 
 ## [0.0.3] - Shared validation tools, a split CI and a pinned Rust toolchain
