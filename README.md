@@ -46,7 +46,7 @@ Each line is one part of this repository and the light says how far it is today.
 | Area | State | What it means here |
 |---|---|---|
 | Repository checks | 🟡 | The repository check, the check of the pictures and the 3 tests of the base run in CI and pass. |
-| Tests | 🟡 | 19 tests of the Rust code and the 3 of the base pass on a computer. They use only data made by the tests themselves, including a simulated project folder with seeded faults (a file missing, flipped, cut, grown or replaced by a folder) and its repair. |
+| Tests | 🟡 | 21 tests of the Rust code and the 3 of the base pass on a computer. They use only data made by the tests themselves, including a simulated project folder with seeded faults (a file missing, flipped, cut, grown or replaced by a folder) and its repair. |
 | Real hardware | 🟠 | Not run on any machine or board: nothing here has been tried on hardware. |
 | Planned function | 🟠 | Written: the sections of the passport, the checks, the canonical hash, the comparison with the files of a folder and between two passports. Not written: the generator from a project, the rebuilding of the manufacturing files and the optional signature. |
 | Requirements | 🟠 | 5 of the 6 requirements are at prototype; the optional signature (PPAS-005) is only planned. None is validated. |

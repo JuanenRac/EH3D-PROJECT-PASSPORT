@@ -19,4 +19,4 @@ The official state of each capability is in REQUIREMENTS.md: 6 requirements: 5 `
 
 ## Known technical debt and omitted tests
 
-19 tests of the Rust code and the 3 of the base; the Rust tests build their own passports and folders, including a simulated folder with seeded faults and its repair, and never touch a real project. `cargo deny` is not run yet.
+21 tests of the Rust code and the 3 of the base; the Rust tests build their own passports and folders, including a simulated folder with seeded faults and its repair, and never touch a real project. `cargo deny` is not run yet.
