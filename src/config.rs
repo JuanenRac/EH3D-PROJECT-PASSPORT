@@ -14,6 +14,8 @@ pub struct Config {
     pub max_hashed_bytes: u64,
     /// Every tool must have a version.
     pub require_tool_versions: bool,
+    /// A file to hash that is a symbolic link is refused (the link could point outside the folder of the project). Off: the link is followed.
+    pub reject_symlinks: bool,
 }
 
 impl Default for Config {
@@ -23,6 +25,7 @@ impl Default for Config {
             max_entries: 100_000,
             max_hashed_bytes: 4 * 1024 * 1024 * 1024,
             require_tool_versions: true,
+            reject_symlinks: true,
         }
     }
 }
@@ -63,6 +66,7 @@ impl Config {
                     }
                     config.max_entries = n;
                 }
+                "reject_symlinks" => config.reject_symlinks = flag(value).ok_or_else(bad)?,
                 "require_tool_versions" => {
                     config.require_tool_versions = flag(value).ok_or_else(bad)?
                 }
@@ -103,6 +107,7 @@ mod tests {
         for bad in [
             "max_entries = 0\n",
             "require_tool_versions = maybe\n",
+            "reject_symlinks = perhaps\n",
             "max_hashed_bytes = big\n",
         ] {
             assert!(
