@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The threat model says what the code already does:** the rows of `docs/THREAT_MODEL.md` that have a mitigation in the code and a test for it are marked `partial` and name the tests and what is still not covered; the rows without either stay `planned`.
+
 - **A file that is a symbolic link is not hashed by default:** the new setting `reject_symlinks` (on by default) makes `hash_file`, `hashfiles` and `verify` refuse a file that is a symbolic link, because the link could point outside the folder of the project; `reject_symlinks = off` follows links as before. A test covers both (on systems that have links).
 - **The hash of a file stops at the limit of bytes while it reads:** besides looking at the size first, the reading counts what it takes and refuses a file that grows, or a pipe or a device that says it is empty, once it passes `max_hashed_bytes`.
 
