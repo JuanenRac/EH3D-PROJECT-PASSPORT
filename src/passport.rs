@@ -477,7 +477,7 @@ mod tests {
     #[test]
     fn the_hash_of_a_fixed_passport_is_the_known_one() {
         // a fixed vector: a change of the order of the fields or of the way the content is written changes every hash that was ever quoted
-        assert_eq!(sample().hash(), "TBD");
+        assert_eq!(sample().hash(), "1118e75bc3ac4a808d16b55a9edb99d8de12217bb5f79019815a39b83731ea13");
     }
 
     #[test]
