@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Stack-Markdown%20%2B%20Python-blue.svg" alt="Markdown and Python">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-3-2EA043.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-68-2EA043.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.0.4-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
@@ -31,7 +31,7 @@
 |---|---|
 | Versione | `0.0.4` |
 | Maturità | Impalcatura |
-| Test | 3 |
+| Test | 68 |
 | Stack tecnologico | Markdown, Python 3.10+ |
 | Su hardware reale | Non ancora eseguito su hardware |
 
@@ -45,8 +45,8 @@ Ogni riga è una parte di questo repository e il semaforo dice a che punto è og
 
 | Area | Stato | Cosa significa qui |
 |---|---|---|
-| Controlli del repository | 🟡 | Il controllo del repository, quello delle immagini e i 3 test della base girano nella CI e passano. |
-| Test | 🟡 | I 33 test del codice Rust e i 3 della base passano su un computer. Usano solo dati prodotti dai test stessi, tra cui una cartella di progetto simulata con guasti a seme fisso (un file mancante, alterato, troncato, allungato o sostituito da una cartella) e la sua riparazione. |
+| Controlli del repository | 🟡 | Il controllo del repository, quello delle immagini e i 68 test della base girano nella CI e passano. |
+| Test | 🟡 | I 45 test del codice Rust e i 68 della base passano su un computer. Usano solo dati prodotti dai test stessi, tra cui una cartella di progetto simulata con guasti a seme fisso (un file mancante, alterato, troncato, allungato o sostituito da una cartella) e la sua riparazione. |
 | Hardware reale | 🟠 | Non eseguito su nessuna macchina né scheda: nulla qui è stato provato su hardware. |
 | Funzione pianificata | 🟠 | Scritto: le sezioni del passaporto, i controlli, l'hash canonico, il confronto con i file di una cartella e tra due passaporti. Non scritto: il generatore da un progetto, la ricostruzione dei file di produzione e la firma facoltativa. |
 | Requisiti | 🟠 | 5 dei 6 requisiti sono a livello di prototipo; la firma facoltativa (PPAS-005) è solo pianificata. Nessuno è validato. |
@@ -88,7 +88,7 @@ python -I -m unittest discover -s tools -p "test_*.py"
 
 ## 🧪 Test
 
-La base ha 3 test (`python -I -m unittest discover -s tools -p "test_*.py"`), e passano. La CI esegue il controllo del repository, quello delle immagini e questi test.
+La base ha 68 test (`python -I -m unittest discover -s tools -p "test_*.py"`), e passano. La CI esegue il controllo del repository, quello delle immagini e questi test.
 
 ## 🏗️ Compilazione e rilascio
 
