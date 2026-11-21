@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Stack-Markdown%20%2B%20Python-blue.svg" alt="Markdown and Python">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-3-2EA043.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-68-2EA043.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.0.4-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
@@ -31,7 +31,7 @@
 |---|---|
 | 版本 | `0.0.4` |
 | 成熟度 | 脚手架 |
-| 测试 | 3 |
+| 测试 | 68 |
 | 技术栈 | Markdown, Python 3.10+ |
 | 真实硬件 | 尚未在硬件上运行 |
 
@@ -45,8 +45,8 @@
 
 | 领域 | 状态 | 在这里的含义 |
 |---|---|---|
-| 仓库检查 | 🟡 | 仓库检查、图片检查以及基础部分的 3 个测试都在 CI 中运行并通过。 |
-| 测试 | 🟡 | Rust 代码的 33 个测试和基础部分的 3 个测试在计算机上通过。它们只使用测试自己生成的数据，其中包括带固定种子故障（文件缺失、被改动、被截短、被加长或被文件夹替换）的模拟项目文件夹及其修复。 |
+| 仓库检查 | 🟡 | 仓库检查、图片检查以及基础部分的 68 个测试都在 CI 中运行并通过。 |
+| 测试 | 🟡 | Rust 代码的 45 个测试和基础部分的 68 个测试在计算机上通过。它们只使用测试自己生成的数据，其中包括带固定种子故障（文件缺失、被改动、被截短、被加长或被文件夹替换）的模拟项目文件夹及其修复。 |
 | 真实硬件 | 🟠 | 没有在任何机床或电路板上运行过：这里没有任何内容在硬件上试过。 |
 | 计划的功能 | 🟠 | 已编写：护照的各个部分、检查、规范化哈希、与文件夹文件的比较以及两份护照之间的比较。未编写：从项目生成、制造文件的重建和可选签名。 |
 | 需求 | 🟠 | 6 项需求中有 5 项处于原型阶段；可选签名（PPAS-005）仅在计划中。没有一项已验证。 |
@@ -88,7 +88,7 @@ python -I -m unittest discover -s tools -p "test_*.py"
 
 ## 🧪 测试
 
-基础部分有 3 个测试（`python -I -m unittest discover -s tools -p "test_*.py"`），并且都通过。CI 运行仓库检查、图片检查和这些测试。
+基础部分有 68 个测试（`python -I -m unittest discover -s tools -p "test_*.py"`），并且都通过。CI 运行仓库检查、图片检查和这些测试。
 
 ## 🏗️ 构建与发布
 

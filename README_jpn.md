@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Stack-Markdown%20%2B%20Python-blue.svg" alt="Markdown and Python">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-3-2EA043.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-68-2EA043.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.0.4-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
@@ -31,7 +31,7 @@
 |---|---|
 | バージョン | `0.0.4` |
 | 成熟度 | 足場 |
-| テスト | 3 |
+| テスト | 68 |
 | 技術スタック | Markdown, Python 3.10+ |
 | 実機での動作 | まだハードウェアでは実行していません |
 
@@ -45,8 +45,8 @@
 
 | 領域 | 状態 | ここでの意味 |
 |---|---|---|
-| リポジトリ チェック | 🟡 | リポジトリ チェック、画像のチェック、基盤の 3 件のテストは CI で実行され、通っています。 |
-| テスト | 🟡 | Rust コードの 33 件と基盤の 3 件のテストがコンピューター上で成功します。使うのはテスト自身が作ったデータだけで、固定シードの故障（ファイルの欠落・改変・切り詰め・追記・フォルダへの置き換え）を与えた模擬プロジェクトフォルダとその修復も含みます。 |
+| リポジトリ チェック | 🟡 | リポジトリ チェック、画像のチェック、基盤の 68 件のテストは CI で実行され、通っています。 |
+| テスト | 🟡 | Rust コードの 45 件と基盤の 68 件のテストがコンピューター上で成功します。使うのはテスト自身が作ったデータだけで、固定シードの故障（ファイルの欠落・改変・切り詰め・追記・フォルダへの置き換え）を与えた模擬プロジェクトフォルダとその修復も含みます。 |
 | 実機 | 🟠 | どの機械やボードでも実行していません。ここにあるものは、ハードウェア上で試していません。 |
 | 計画中の機能 | 🟠 | 作成済み：パスポートのセクション、検査、正規化ハッシュ、フォルダーのファイルとの比較、2 つのパスポートの比較。未作成：プロジェクトからの生成、製造ファイルの再構築、任意の署名。 |
 | 要件 | 🟠 | 6 件のうち 5 件の要件はプロトタイプで、任意の署名（PPAS-005）は計画のみです。検証済みのものはありません。 |
@@ -88,7 +88,7 @@ python -I -m unittest discover -s tools -p "test_*.py"
 
 ## 🧪 テスト
 
-基盤には 3 件のテストがあり（`python -I -m unittest discover -s tools -p "test_*.py"`）、通っています。CI はリポジトリ チェック、画像のチェック、これらのテストを実行します。
+基盤には 68 件のテストがあり（`python -I -m unittest discover -s tools -p "test_*.py"`）、通っています。CI はリポジトリ チェック、画像のチェック、これらのテストを実行します。
 
 ## 🏗️ ビルドとリリース
 

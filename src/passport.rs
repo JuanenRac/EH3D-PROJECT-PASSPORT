@@ -747,4 +747,177 @@ mod tests {
             Err(PassportError::TooLarge { .. })
         ));
     }
+
+    #[test]
+    fn only_sixty_four_lower_case_hexadecimal_digits_are_a_sha256() {
+        assert!(is_sha256(&sha('a')));
+        assert!(is_sha256(&"0123456789abcdef".repeat(4)));
+        assert!(!is_sha256(&sha('A')));
+        assert!(!is_sha256(&sha('g')));
+        assert!(!is_sha256(&"a".repeat(63)));
+        assert!(!is_sha256(&"a".repeat(65)));
+        assert!(!is_sha256(""));
+        // sixty-four bytes that are thirty-two letters of two bytes each
+        assert!(!is_sha256(&"\u{e9}".repeat(32)));
+    }
+
+    #[test]
+    fn a_safe_path_is_relative_with_slashes_and_no_dot_parts() {
+        for good in [
+            "a",
+            "a/b.txt",
+            "design/board 1.phoenixproj",
+            "a/.hidden",
+            "a/b/c/d",
+        ] {
+            assert!(is_safe_path(good), "{good}");
+        }
+        for bad in [
+            "", "/a", "a//b", "./a", "a/./b", "../a", "a/../b", "a/..", "a\\b", "C:/x", "a/", "a:b",
+        ] {
+            assert!(!is_safe_path(bad), "{bad}");
+        }
+    }
+
+    #[test]
+    fn making_a_passport_canonical_twice_changes_nothing_and_keeps_the_hash() {
+        let mut p = sample();
+        p.tools.reverse();
+        p.limitations.push("another limit".into());
+        p.limitations.reverse();
+        let once = p.canonical();
+        assert_eq!(once.canonical(), once);
+        assert_eq!(p.hash(), once.hash());
+    }
+
+    #[test]
+    fn a_passport_written_and_read_again_is_its_canonical_form_with_the_same_bytes() {
+        let config = Config::default();
+        let mut p = sample();
+        p.tools.reverse();
+        let text = p.to_json().unwrap();
+        let again = Passport::from_json(&text, &config).unwrap();
+        assert_eq!(again, p.canonical());
+        assert_eq!(again.to_json().unwrap(), text);
+        assert_eq!(again.hash(), p.hash());
+    }
+
+    #[test]
+    fn a_text_that_is_not_a_passport_is_an_error_and_never_a_panic() {
+        let config = Config::default();
+        for text in [
+            "",
+            " ",
+            "null",
+            "[]",
+            "{",
+            "{}",
+            "\u{feff}{}",
+            "\"text\"",
+            "12",
+        ] {
+            assert!(
+                matches!(
+                    Passport::from_json(text, &config),
+                    Err(PassportError::BadJson(_))
+                ),
+                "{text:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn a_section_of_the_wrong_type_is_refused() {
+        let config = Config::default();
+        let text = r#"{"project":"p","tools":"none","inputs":[],"outputs":[],"checks":[],"limitations":[],"pending":[]}"#;
+        assert!(matches!(
+            Passport::from_json(text, &config),
+            Err(PassportError::BadJson(_))
+        ));
+        let text = r#"{"project":"p","tools":[],"inputs":[],"outputs":[],"checks":[],"limitations":[1],"pending":[]}"#;
+        assert!(matches!(
+            Passport::from_json(text, &config),
+            Err(PassportError::BadJson(_))
+        ));
+    }
+
+    #[test]
+    fn a_passport_with_every_section_empty_is_valid_and_has_a_stable_hash() {
+        let config = Config::default();
+        let text = r#"{"project":"p","tools":[],"inputs":[],"outputs":[],"checks":[],"limitations":[],"pending":[]}"#;
+        let p = Passport::from_json(text, &config).unwrap();
+        assert_eq!(p.created, None);
+        assert_eq!(p.hash(), Passport::from_json(text, &config).unwrap().hash());
+        assert_eq!(p.hash().len(), 64);
+    }
+
+    #[test]
+    fn the_most_entries_of_one_section_is_read_and_one_more_is_not() {
+        let mut p = sample();
+        p.limitations = (0..3).map(|n| format!("limit {n}")).collect();
+        let text = p.to_json().unwrap();
+        let exact = Config {
+            max_entries: 3,
+            ..Config::default()
+        };
+        assert!(Passport::from_json(&text, &exact).is_ok());
+        let fewer = Config {
+            max_entries: 2,
+            ..Config::default()
+        };
+        assert!(matches!(
+            Passport::from_json(&text, &fewer),
+            Err(PassportError::TooLarge { .. })
+        ));
+    }
+
+    #[test]
+    fn a_change_of_the_name_of_the_project_or_of_one_hash_changes_the_hash() {
+        let base = sample();
+        let mut renamed = sample();
+        renamed.project = "other".into();
+        let mut flipped = sample();
+        flipped.outputs[0].sha256 = sha('d');
+        assert_ne!(base.hash(), renamed.hash());
+        assert_ne!(base.hash(), flipped.hash());
+        assert_ne!(renamed.hash(), flipped.hash());
+    }
+
+    #[test]
+    fn a_tool_that_is_removed_or_a_check_that_changes_its_verdict_is_said() {
+        let a = sample();
+        let mut b = sample();
+        b.tools.remove(0);
+        b.checks[0].verdict = "fail".into();
+        assert_eq!(
+            a.compare(&b),
+            vec!["tool removed: phoenix", "check changed: rules pass -> fail"]
+        );
+        let mut c = sample();
+        c.checks[0].report_sha256 = sha('9');
+        assert_eq!(a.compare(&c), vec!["check report changed: rules"]);
+    }
+
+    #[test]
+    fn comparing_in_one_direction_and_in_the_other_swaps_the_added_and_the_removed() {
+        let a = sample();
+        let mut b = sample();
+        b.pending.push("choose the board house".into());
+        assert_eq!(a.compare(&b), vec!["pending added: choose the board house"]);
+        assert_eq!(
+            b.compare(&a),
+            vec!["pending removed: choose the board house"]
+        );
+    }
+
+    #[test]
+    fn the_order_of_the_sections_does_not_make_two_passports_differ() {
+        let a = sample();
+        let mut b = sample();
+        b.tools.reverse();
+        b.limitations.reverse();
+        assert!(a.compare(&b).is_empty());
+        assert!(b.compare(&a).is_empty());
+        assert_eq!(a.hash(), b.hash());
+    }
 }
