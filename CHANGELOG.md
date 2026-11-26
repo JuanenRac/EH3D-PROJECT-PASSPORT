@@ -3,6 +3,9 @@
 All notable changes to this project are documented here.
 
 ## [Unreleased]
+
+## [0.0.5] - Safer file hashing and verification, and many more tests
+
 - **A folder that is a symbolic link is refused too:** `reject_symlinks` only looked at the file itself, so a folder of the project that is a link let `hashfiles` and `verify` read files outside the project. Both now refuse it unless the setting is off.
 - **The same content has the same hash when a name or a path appears twice:** the sections were sorted by the name or the path alone, so two entries that shared it kept the order they were written in and gave another hash. Every field now takes part in the order; passports without repeated entries keep their hash.
 - **A JSON array is no longer read as a passport:** only an object is.
