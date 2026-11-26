@@ -34,7 +34,7 @@ pub enum PassportError {
     /// A path given to `hashfiles` is not a safe relative path inside the folder.
     #[error("unsafe path: {0}")]
     UnsafePath(String),
-    /// A file to hash is a symbolic link and the settings refuse links (`reject_symlinks`).
+    /// A file to hash, or a folder on the way to it, is a symbolic link and the settings refuse links (`reject_symlinks`).
     #[error("{path} is a symbolic link; `reject_symlinks = off` in the settings follows links")]
     Symlink {
         /// The file.

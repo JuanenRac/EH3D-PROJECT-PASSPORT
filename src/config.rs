@@ -14,7 +14,7 @@ pub struct Config {
     pub max_hashed_bytes: u64,
     /// Every tool must have a version.
     pub require_tool_versions: bool,
-    /// A file to hash that is a symbolic link is refused (the link could point outside the folder of the project). Off: the link is followed.
+    /// A file to hash that is a symbolic link, or that is reached through a folder of the project that is one, is refused (the link could point outside the folder of the project). Off: links are followed.
     pub reject_symlinks: bool,
 }
 
