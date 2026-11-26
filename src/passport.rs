@@ -9,7 +9,7 @@ use sha2::{Digest, Sha256};
 use std::collections::BTreeMap;
 use std::fs;
 use std::io::Read;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 /// A tool and the version that was used.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -103,6 +103,19 @@ fn hex(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{b:02x}")).collect()
 }
 
+/// The first folder between `base` and the file of the safe path `relative` that is a symbolic link, if any. `base` itself is the choice of the person.
+fn linked_folder(base: &Path, relative: &str) -> Option<PathBuf> {
+    let (folders, _) = relative.rsplit_once('/')?;
+    let mut path = base.to_path_buf();
+    for part in folders.split('/') {
+        path.push(part);
+        if fs::symlink_metadata(&path).is_ok_and(|m| m.file_type().is_symlink()) {
+            return Some(path);
+        }
+    }
+    None
+}
+
 /// The SHA-256 of a file, read in blocks, within the limit of the settings.
 pub fn hash_file(path: &Path, config: &Config) -> Result<String, PassportError> {
     let io = |source| PassportError::Io {
@@ -165,6 +178,9 @@ pub fn hash_files(
         if !is_safe_path(path) {
             return Err(PassportError::UnsafePath(path.clone()));
         }
+        if let Some(link) = linked_folder(base, path).filter(|_| config.reject_symlinks) {
+            return Err(PassportError::Symlink { path: link });
+        }
         out.push(FileRef {
             path: path.clone(),
             sha256: hash_file(&base.join(path), config)?,
@@ -182,6 +198,10 @@ impl Passport {
             return Err(PassportError::TooLarge {
                 what: "passport bytes",
             });
+        }
+        // a JSON array would be read as a list of the fields in order, so only an object is a passport
+        if !text.trim_start().starts_with('{') {
+            return Err(PassportError::BadJson("a JSON object was expected".into()));
         }
         let passport: Passport =
             serde_json::from_str(text).map_err(|e| PassportError::BadJson(e.to_string()))?;
@@ -205,10 +225,17 @@ impl Passport {
     /// The passport with every section sorted: the same content in another order is the same canonical passport.
     pub fn canonical(&self) -> Passport {
         let mut p = self.clone();
-        p.tools.sort_by(|a, b| a.name.cmp(&b.name));
-        p.inputs.sort_by(|a, b| a.path.cmp(&b.path));
-        p.outputs.sort_by(|a, b| a.path.cmp(&b.path));
-        p.checks.sort_by(|a, b| a.name.cmp(&b.name));
+        // every field takes part, so two entries with the same name or path do not keep the order they were written in
+        let file = |a: &FileRef, b: &FileRef| {
+            (&a.path, &a.sha256, &a.note).cmp(&(&b.path, &b.sha256, &b.note))
+        };
+        p.tools
+            .sort_by(|a, b| (&a.name, &a.version).cmp(&(&b.name, &b.version)));
+        p.inputs.sort_by(file);
+        p.outputs.sort_by(file);
+        p.checks.sort_by(|a, b| {
+            (&a.name, &a.verdict, &a.report_sha256).cmp(&(&b.name, &b.verdict, &b.report_sha256))
+        });
         p.limitations.sort();
         p.pending.sort();
         p
@@ -309,6 +336,9 @@ impl Passport {
                     message: "the file is not in the folder".into(),
                 });
                 continue;
+            }
+            if let Some(link) = linked_folder(base, &file.path).filter(|_| config.reject_symlinks) {
+                return Err(PassportError::Symlink { path: link });
             }
             let actual = hash_file(&path, config)?;
             if actual != file.sha256 {
@@ -919,5 +949,214 @@ mod tests {
         assert!(a.compare(&b).is_empty());
         assert!(b.compare(&a).is_empty());
         assert_eq!(a.hash(), b.hash());
+    }
+
+    #[test]
+    fn a_json_array_is_not_a_passport() {
+        let config = Config::default();
+        for text in [
+            r#"["p",null,[],[],[],[],[],[]]"#,
+            r#"  ["p",null,[],[],[],[],[],[]]"#,
+        ] {
+            assert!(
+                matches!(
+                    Passport::from_json(text, &config),
+                    Err(PassportError::BadJson(_))
+                ),
+                "{text}"
+            );
+        }
+    }
+
+    #[test]
+    fn entries_with_the_same_name_or_path_give_the_same_hash_in_any_order() {
+        let mut a = sample();
+        a.tools.push(Tool {
+            name: "phoenix".into(),
+            version: "0.0.9".into(),
+        });
+        a.inputs.push(FileRef {
+            path: a.inputs[0].path.clone(),
+            sha256: sha('0'),
+            note: "again".into(),
+        });
+        a.outputs.push(FileRef {
+            path: a.outputs[0].path.clone(),
+            sha256: a.outputs[0].sha256.clone(),
+            note: "other note".into(),
+        });
+        a.checks.push(CheckRef {
+            name: "rules".into(),
+            verdict: "fail".into(),
+            report_sha256: sha('2'),
+        });
+        let mut b = a.clone();
+        b.tools.reverse();
+        b.inputs.reverse();
+        b.outputs.reverse();
+        b.checks.reverse();
+        assert_eq!(a.hash(), b.hash());
+        assert_eq!(a.to_json().unwrap(), b.to_json().unwrap());
+        assert!(a.compare(&b).is_empty(), "{:?}", a.compare(&b));
+    }
+
+    #[test]
+    fn seeded_shuffles_never_change_the_hash_the_bytes_or_the_findings() {
+        let mut p = sample();
+        for n in 0..12u8 {
+            p.inputs.push(FileRef {
+                path: format!("design/part{}.bin", n % 5),
+                sha256: sha(char::from(b'0' + n % 10)),
+                note: String::new(),
+            });
+            p.limitations.push(format!("limit {}", n % 4));
+        }
+        let config = Config::default();
+        let (hash, text, findings) = (p.hash(), p.to_json().unwrap(), p.check(&config));
+        let mut rng = crate::sim::SimRng::new(2024);
+        for round in 0..50 {
+            let mut q = p.clone();
+            for i in (1..q.inputs.len()).rev() {
+                q.inputs.swap(i, rng.below(i + 1));
+            }
+            for i in (1..q.limitations.len()).rev() {
+                q.limitations.swap(i, rng.below(i + 1));
+            }
+            assert_eq!(q.hash(), hash, "round {round}");
+            assert_eq!(q.to_json().unwrap(), text, "round {round}");
+            assert_eq!(q.check(&config).len(), findings.len(), "round {round}");
+        }
+    }
+
+    #[test]
+    fn a_passport_cut_at_any_place_is_an_error_and_never_a_panic() {
+        let config = Config::default();
+        let mut p = sample();
+        p.pending.push("d\u{e9}cision \u{6c7a}".into());
+        let text = p.to_json().unwrap();
+        for end in (0..text.len()).filter(|i| text.is_char_boundary(*i)) {
+            assert!(
+                matches!(
+                    Passport::from_json(&text[..end], &config),
+                    Err(PassportError::BadJson(_))
+                ),
+                "cut at {end}"
+            );
+        }
+    }
+
+    #[test]
+    fn the_most_entries_applies_to_every_section() {
+        let one = Config {
+            max_entries: 2,
+            ..Config::default()
+        };
+        for section in 0..6 {
+            let mut p = sample();
+            for _ in 0..3 {
+                match section {
+                    0 => p.tools.push(p.tools[0].clone()),
+                    1 => p.inputs.push(p.inputs[0].clone()),
+                    2 => p.outputs.push(p.outputs[0].clone()),
+                    3 => p.checks.push(p.checks[0].clone()),
+                    4 => p.limitations.push("more".into()),
+                    _ => p.pending.push("more".into()),
+                }
+            }
+            let text = p.to_json().unwrap();
+            assert!(
+                matches!(
+                    Passport::from_json(&text, &one),
+                    Err(PassportError::TooLarge { what: "entries" })
+                ),
+                "section {section}"
+            );
+        }
+    }
+
+    #[test]
+    fn removed_files_checks_and_notes_of_the_decisions_are_each_one_line() {
+        let a = sample();
+        let mut b = sample();
+        b.inputs.clear();
+        b.outputs.clear();
+        b.checks.clear();
+        b.limitations.clear();
+        assert_eq!(
+            a.compare(&b),
+            vec![
+                "input removed: design/board.phoenixproj",
+                "output removed: out/board.eh3dproj",
+                "check removed: rules",
+                "limitation removed: never built on a machine",
+            ]
+        );
+    }
+
+    #[test]
+    fn a_change_of_a_note_alone_is_still_said() {
+        let a = sample();
+        let mut b = sample();
+        b.inputs[0].note = "re-exported".into();
+        assert_eq!(a.compare(&b), vec!["other content changed"]);
+        assert_ne!(a.hash(), b.hash());
+    }
+
+    #[test]
+    fn a_file_of_exactly_the_limit_and_longer_than_one_block_is_hashed_whole() {
+        let work = tempfile::tempdir().unwrap();
+        let bytes: Vec<u8> = (0..200_000u32).map(|n| (n % 251) as u8).collect();
+        fs::write(work.path().join("big.bin"), &bytes).unwrap();
+        let exact = Config {
+            max_hashed_bytes: bytes.len() as u64,
+            ..Config::default()
+        };
+        assert_eq!(
+            hash_file(&work.path().join("big.bin"), &exact).unwrap(),
+            hex(&Sha256::digest(&bytes))
+        );
+        let less = Config {
+            max_hashed_bytes: bytes.len() as u64 - 1,
+            ..Config::default()
+        };
+        assert!(matches!(
+            hash_file(&work.path().join("big.bin"), &less),
+            Err(PassportError::TooLarge { .. })
+        ));
+    }
+
+    #[test]
+    fn a_folder_in_the_place_of_a_file_cannot_be_hashed() {
+        let work = tempfile::tempdir().unwrap();
+        fs::create_dir(work.path().join("folder")).unwrap();
+        assert!(hash_files(work.path(), &["folder".to_string()], &Config::default()).is_err());
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn a_folder_that_is_a_symbolic_link_is_refused_unless_the_settings_follow_links() {
+        let outside = tempfile::tempdir().unwrap();
+        fs::write(outside.path().join("secret.bin"), b"data").unwrap();
+        let work = tempfile::tempdir().unwrap();
+        std::os::unix::fs::symlink(outside.path(), work.path().join("design")).unwrap();
+        let config = Config::default();
+        let paths = ["design/secret.bin".to_string()];
+        assert!(matches!(
+            hash_files(work.path(), &paths, &config),
+            Err(PassportError::Symlink { .. })
+        ));
+        let follow = Config {
+            reject_symlinks: false,
+            ..Config::default()
+        };
+        let refs = hash_files(work.path(), &paths, &follow).unwrap();
+        let mut p = sample();
+        p.inputs = refs;
+        p.outputs.clear();
+        assert!(matches!(
+            p.verify(work.path(), &config),
+            Err(PassportError::Symlink { .. })
+        ));
+        assert!(p.verify(work.path(), &follow).unwrap().is_empty());
     }
 }

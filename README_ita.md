@@ -46,7 +46,7 @@ Ogni riga è una parte di questo repository e il semaforo dice a che punto è og
 | Area | Stato | Cosa significa qui |
 |---|---|---|
 | Controlli del repository | 🟡 | Il controllo del repository, quello delle immagini e i 68 test della base girano nella CI e passano. |
-| Test | 🟡 | I 45 test del codice Rust e i 68 della base passano su un computer. Usano solo dati prodotti dai test stessi, tra cui una cartella di progetto simulata con guasti a seme fisso (un file mancante, alterato, troncato, allungato o sostituito da una cartella) e la sua riparazione. |
+| Test | 🟡 | I 57 test del codice Rust e i 68 della base passano su un computer. Usano solo dati prodotti dai test stessi, tra cui una cartella di progetto simulata con guasti a seme fisso (un file mancante, alterato, troncato, allungato o sostituito da una cartella) e la sua riparazione. |
 | Hardware reale | 🟠 | Non eseguito su nessuna macchina né scheda: nulla qui è stato provato su hardware. |
 | Funzione pianificata | 🟠 | Scritto: le sezioni del passaporto, i controlli, l'hash canonico, il confronto con i file di una cartella e tra due passaporti. Non scritto: il generatore da un progetto, la ricostruzione dei file di produzione e la firma facoltativa. |
 | Requisiti | 🟠 | 5 dei 6 requisiti sono a livello di prototipo; la firma facoltativa (PPAS-005) è solo pianificata. Nessuno è validato. |

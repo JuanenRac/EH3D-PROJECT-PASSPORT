@@ -46,7 +46,7 @@ Cada linha é uma parte deste repositório e a luz diz até onde chega hoje. É 
 | Área | Estado | O que significa aqui |
 |---|---|---|
 | Verificações do repositório | 🟡 | A verificação do repositório, a das imagens e os 68 testes da base correm na CI e passam. |
-| Testes | 🟡 | Os 45 testes do código Rust e os 68 da base passam num computador. Usam apenas dados feitos pelos próprios testes, incluindo uma pasta de projeto simulada com avarias de semente fixa (um ficheiro em falta, alterado, cortado, aumentado ou substituído por uma pasta) e a sua reparação. |
+| Testes | 🟡 | Os 57 testes do código Rust e os 68 da base passam num computador. Usam apenas dados feitos pelos próprios testes, incluindo uma pasta de projeto simulada com avarias de semente fixa (um ficheiro em falta, alterado, cortado, aumentado ou substituído por uma pasta) e a sua reparação. |
 | Hardware real | 🟠 | Não foi executado em nenhuma máquina nem placa: nada aqui foi experimentado em hardware. |
 | Função planeada | 🟠 | Escrito: as secções do passaporte, as verificações, o hash canónico, a comparação com os ficheiros de uma pasta e entre dois passaportes. Por escrever: o gerador a partir de um projeto, a reconstrução dos ficheiros de fabrico e a assinatura opcional. |
 | Requisitos | 🟠 | 5 dos 6 requisitos estão em protótipo; a assinatura opcional (PPAS-005) está apenas planeada. Nenhum está validado. |

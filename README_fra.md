@@ -46,7 +46,7 @@ Chaque ligne est une partie de ce dépôt et le feu dit où elle en est aujourd'
 | Domaine | État | Ce que cela veut dire ici |
 |---|---|---|
 | Contrôles du dépôt | 🟡 | Le contrôle du dépôt, celui des images et les 68 tests de la base tournent dans la CI et réussissent. |
-| Tests | 🟡 | Les 45 tests du code Rust et les 68 de la base réussissent sur un ordinateur. Ils n'utilisent que des données faites par les tests eux-mêmes, dont un dossier de projet simulé avec des pannes à graine fixe (un fichier absent, modifié, tronqué, allongé ou remplacé par un dossier) et sa réparation. |
+| Tests | 🟡 | Les 57 tests du code Rust et les 68 de la base réussissent sur un ordinateur. Ils n'utilisent que des données faites par les tests eux-mêmes, dont un dossier de projet simulé avec des pannes à graine fixe (un fichier absent, modifié, tronqué, allongé ou remplacé par un dossier) et sa réparation. |
 | Matériel réel | 🟠 | Non exécuté sur une machine ni une carte : rien ici n'a été essayé sur du matériel. |
 | Fonction prévue | 🟠 | Écrit : les sections du passeport, les contrôles, le hash canonique, la comparaison avec les fichiers d'un dossier et entre deux passeports. Non écrit : le générateur depuis un projet, la reconstruction des fichiers de fabrication et la signature facultative. |
 | Exigences | 🟠 | 5 des 6 exigences sont au stade de prototype ; la signature facultative (PPAS-005) est seulement prévue. Aucune n'est validée. |

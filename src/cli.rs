@@ -203,4 +203,31 @@ mod tests {
             0
         );
     }
+
+    #[test]
+    fn a_command_that_does_not_exist_prints_the_usage_and_writes_nothing_else() {
+        for list in [
+            &["sign", "a.json"][..],
+            &["check", "a.json", "b.json"][..],
+            &["compare", "a.json"][..],
+        ] {
+            let (code, out, err) = call(list);
+            assert_eq!(code, 2, "{list:?}");
+            assert!(out.is_empty(), "{list:?}: {out}");
+            assert!(err.contains("eh3d-project-passport"), "{list:?}: {err}");
+        }
+    }
+
+    #[test]
+    fn hashfiles_prints_references_that_read_back_in_the_order_of_the_paths() {
+        let work = tempfile::tempdir().unwrap();
+        fs::write(work.path().join("b.txt"), b"b").unwrap();
+        fs::write(work.path().join("a.txt"), b"a").unwrap();
+        let (code, text, _) = call(&["hashfiles", work.path().to_str().unwrap(), "b.txt", "a.txt"]);
+        assert_eq!(code, 0);
+        let refs: Vec<crate::FileRef> = serde_json::from_str(&text).unwrap();
+        let paths: Vec<&str> = refs.iter().map(|r| r.path.as_str()).collect();
+        assert_eq!(paths, ["a.txt", "b.txt"]);
+        assert!(refs.iter().all(|r| crate::passport::is_sha256(&r.sha256)));
+    }
 }
