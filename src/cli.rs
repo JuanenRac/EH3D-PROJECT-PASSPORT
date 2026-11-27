@@ -35,9 +35,24 @@ fn read_text(path: &Path, limit: u64) -> Result<String, PassportError> {
 
 fn print_findings(findings: &[Finding], out: &mut dyn Write) {
     for f in findings {
-        let _ = writeln!(out, "{} [{}]: {}", f.code.as_str(), f.subject, f.message);
+        let line = format!("{} [{}]: {}", f.code.as_str(), f.subject, f.message);
+        let _ = writeln!(out, "{}", one_line(&line));
     }
     let _ = writeln!(out, "# {} findings", findings.len());
+}
+
+/// A text from an input file, fit to print on one line: control characters and the Unicode line and paragraph separators become spaces.
+/// Only what is printed goes through here; what is compared or hashed does not.
+fn one_line(text: &str) -> String {
+    text.chars()
+        .map(|c| {
+            if c.is_control() || matches!(c, '\u{2028}' | '\u{2029}') {
+                ' '
+            } else {
+                c
+            }
+        })
+        .collect()
 }
 
 /// Run the command line with the given arguments (without the program name). Returns the exit code.
@@ -49,7 +64,7 @@ pub fn run(args: &[String], out: &mut dyn Write, err: &mut dyn Write) -> i32 {
             2
         }
         Err(Some(error)) => {
-            let _ = writeln!(err, "error: {error}");
+            let _ = writeln!(err, "error: {}", one_line(&error.to_string()));
             2
         }
     }
@@ -95,7 +110,7 @@ fn dispatch(args: &[String], out: &mut dyn Write) -> Result<i32, Option<Passport
         ["compare", _, _] => {
             let lines = load(&args[1])?.compare(&load(&args[2])?);
             for line in &lines {
-                let _ = writeln!(out, "{line}");
+                let _ = writeln!(out, "{}", one_line(line));
             }
             Ok(if lines.is_empty() { 0 } else { 1 })
         }
@@ -229,5 +244,54 @@ mod tests {
         let paths: Vec<&str> = refs.iter().map(|r| r.path.as_str()).collect();
         assert_eq!(paths, ["a.txt", "b.txt"]);
         assert!(refs.iter().all(|r| crate::passport::is_sha256(&r.sha256)));
+    }
+
+    #[test]
+    fn names_read_from_the_input_cannot_start_a_line_of_their_own() {
+        let work = tempfile::tempdir().unwrap();
+        let file = |name: &str, text: &str| {
+            let path = work.path().join(name);
+            std::fs::write(&path, text).unwrap();
+            path.to_string_lossy().into_owned()
+        };
+        let call = |list: &[&str]| {
+            let args: Vec<String> = list.iter().map(|s| s.to_string()).collect();
+            let (mut out, mut err) = (Vec::new(), Vec::new());
+            let code = run(&args, &mut out, &mut err);
+            let out = String::from_utf8(out).unwrap();
+            let err = String::from_utf8(err).unwrap();
+            for c in out.chars().chain(err.chars()) {
+                assert!(
+                    c == '\n' || !(c.is_control() || c == '\u{2028}' || c == '\u{2029}'),
+                    "{c:?} in {out}{err}"
+                );
+            }
+            (code, out, err)
+        };
+        let named = file(
+            "named.json",
+            r#"{"project":"b","tools":[{"name":"t\nforged\u2028","version":""}],"inputs":[],"outputs":[],"checks":[],"limitations":[],"pending":[]}"#,
+        );
+        let none = file(
+            "none.json",
+            r#"{"project":"b","tools":[],"inputs":[],"outputs":[],"checks":[],"limitations":[],"pending":[]}"#,
+        );
+        let (code, out, _) = call(&["check", &named]);
+        assert_eq!(code, 1, "{out}");
+        assert!(out.contains("forged"), "{out}");
+        for line in out.lines() {
+            assert!(
+                line.starts_with("PHOENIX-") || line.starts_with("# "),
+                "{out}"
+            );
+        }
+        let (code, out, _) = call(&["compare", &named, &none]);
+        assert_eq!(code, 1, "{out}");
+        assert_eq!(out.lines().count(), 1, "{out}");
+        let unknown = file("unknown.json", r#"{"x\nforged\u2028":1}"#);
+        let (code, _, err) = call(&["check", &unknown]);
+        assert_eq!(code, 2, "{err}");
+        assert_eq!(err.lines().count(), 1, "{err}");
+        assert!(err.contains("forged"), "{err}");
     }
 }
