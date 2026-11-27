@@ -46,7 +46,7 @@ Cada línea es una parte de este repositorio y la luz dice hasta dónde llega ho
 | Área | Estado | Qué significa aquí |
 |---|---|---|
 | Comprobaciones del repositorio | 🟡 | La comprobación del repositorio, la de las imágenes y las 68 pruebas de la base se ejecutan en el CI y pasan. |
-| Pruebas | 🟡 | Las 59 pruebas del código Rust y las 68 de la base pasan en un ordenador. Usan solo datos hechos por las propias pruebas, incluida una carpeta de proyecto simulada con fallos de semilla fija (un archivo ausente, alterado, cortado, ampliado o sustituido por una carpeta) y su reparación. |
+| Pruebas | 🟡 | Las 60 pruebas del código Rust y las 68 de la base pasan en un ordenador. Usan solo datos hechos por las propias pruebas, incluida una carpeta de proyecto simulada con fallos de semilla fija (un archivo ausente, alterado, cortado, ampliado o sustituido por una carpeta) y su reparación. |
 | Hardware real | 🟠 | No se ha ejecutado en ninguna máquina ni placa: nada de aquí se ha probado en hardware. |
 | Función planificada | 🟠 | Escrito: las secciones del pasaporte, las comprobaciones, el hash canónico, la comparación con los ficheros de una carpeta y entre dos pasaportes. Sin escribir: el generador desde un proyecto, la reconstrucción de los ficheros de fabricación y la firma opcional. |
 | Requisitos | 🟠 | 5 de los 6 requisitos están en prototipo; la firma opcional (PPAS-005) solo está planificada. Ninguno está validado. |

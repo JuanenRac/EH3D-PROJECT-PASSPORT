@@ -46,7 +46,7 @@ Jede Zeile ist ein Teil dieses Repositorys, und die Ampel sagt, wie weit er heut
 | Bereich | Stand | Was das hier bedeutet |
 |---|---|---|
 | Repository-Prüfungen | 🟡 | Die Repository-Prüfung, die Prüfung der Bilder und die 68 Tests der Basis laufen in der CI und bestehen. |
-| Tests | 🟡 | Die 59 Tests des Rust-Codes und die 68 der Basis bestehen auf einem Rechner. Sie verwenden nur Daten, die die Tests selbst erzeugen, darunter ein simulierter Projektordner mit festen Zufallsfehlern (eine Datei fehlt, ist verändert, gekürzt, verlängert oder durch einen Ordner ersetzt) und seine Reparatur. |
+| Tests | 🟡 | Die 60 Tests des Rust-Codes und die 68 der Basis bestehen auf einem Rechner. Sie verwenden nur Daten, die die Tests selbst erzeugen, darunter ein simulierter Projektordner mit festen Zufallsfehlern (eine Datei fehlt, ist verändert, gekürzt, verlängert oder durch einen Ordner ersetzt) und seine Reparatur. |
 | Echte Hardware | 🟠 | Auf keiner Maschine und keiner Platine ausgeführt: nichts hier wurde auf Hardware ausprobiert. |
 | Geplante Funktion | 🟠 | Geschrieben: die Abschnitte des Passes, die Prüfungen, der kanonische Hash, der Vergleich mit den Dateien eines Ordners und zwischen zwei Pässen. Nicht geschrieben: der Generator aus einem Projekt, der Neuaufbau der Fertigungsdateien und die optionale Signatur. |
 | Anforderungen | 🟠 | 5 der 6 Anforderungen sind im Prototyp; die optionale Signatur (PPAS-005) ist nur geplant. Keine ist validiert. |
