@@ -21,6 +21,6 @@ The official state of each capability is in `REQUIREMENTS.md`. The register has 
 
 ## Known technical debt and omitted tests
 
-* 57 tests of the Rust code (nine of them keep this register true) and the 68 of the base (65 of them test the shared tools of the base); the Rust tests build their own passports and folders and never touch a real project.
+* 59 tests of the Rust code (nine of them keep this register true) and the 68 of the base (65 of them test the shared tools of the base); the Rust tests build their own passports and folders and never touch a real project.
 * Seven of the tests run the simulation (`src/lib.rs`): the seeded folder, its faults and their repair, a campaign that must find exactly the files it broke, a file over the limit and an unsafe path.
 * `cargo deny` is not run yet.
