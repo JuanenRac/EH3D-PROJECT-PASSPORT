@@ -31,6 +31,9 @@ pub enum PassportError {
     /// The passport is not valid JSON of the expected shape.
     #[error("the passport cannot be read: {0}")]
     BadJson(String),
+    /// The passport names no file, so a verification would have nothing to compare.
+    #[error("the passport records no input and no output, so nothing was verified")]
+    NothingToVerify,
     /// A path given to `hashfiles` is not a safe relative path inside the folder.
     #[error("unsafe path: {0}")]
     UnsafePath(String),

@@ -4,6 +4,10 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **`verify` no longer succeeds when there is nothing to verify:** a passport without inputs or outputs gave "0 findings" and exit code 0 without reading a single file. It is now refused as unusable input.
+- **A check listed twice is a duplicate:** two checks of the same name, one failed and one passed, gave no finding.
+- **2 more tests** of the Rust code, for the above.
+
 ## [0.0.5] - Safer file hashing and verification, and many more tests
 
 - **A folder that is a symbolic link is refused too:** `reject_symlinks` only looked at the file itself, so a folder of the project that is a link let `hashfiles` and `verify` read files outside the project. Both now refuse it unless the setting is off.

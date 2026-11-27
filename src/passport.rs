@@ -303,7 +303,15 @@ impl Passport {
                 }
             }
         }
+        let mut check_names = BTreeMap::new();
         for c in &self.checks {
+            if check_names.insert(c.name.as_str(), ()).is_some() {
+                out.push(f(
+                    Code::Duplicate,
+                    &c.name,
+                    "the check is listed more than once",
+                ));
+            }
             if !is_sha256(&c.report_sha256) {
                 out.push(f(
                     Code::BadHash,
@@ -318,6 +326,9 @@ impl Passport {
 
     /// Compare the files of a folder with the passport: a file that is missing or whose content is no longer what was recorded. The folder is only read.
     pub fn verify(&self, base: &Path, config: &Config) -> Result<Vec<Finding>, PassportError> {
+        if self.inputs.is_empty() && self.outputs.is_empty() {
+            return Err(PassportError::NothingToVerify);
+        }
         let mut out = Vec::new();
         for file in self.inputs.iter().chain(&self.outputs) {
             if !is_safe_path(&file.path) {
@@ -1158,5 +1169,31 @@ mod tests {
             Err(PassportError::Symlink { .. })
         ));
         assert!(p.verify(work.path(), &follow).unwrap().is_empty());
+    }
+
+    #[test]
+    fn a_passport_without_any_file_is_not_verified_as_matching() {
+        let text = r#"{"project":"p","tools":[],"inputs":[],"outputs":[],"checks":[],"limitations":[],"pending":[]}"#;
+        let config = crate::config::Config::default();
+        let passport = crate::passport::Passport::from_json(text, &config).unwrap();
+        let result = passport.verify(std::path::Path::new("."), &config);
+        assert!(matches!(
+            result,
+            Err(crate::error::PassportError::NothingToVerify)
+        ));
+    }
+
+    #[test]
+    fn a_check_listed_twice_with_two_verdicts_is_a_duplicate() {
+        let text = r#"{"project":"p","tools":[],"inputs":[],"outputs":[],"checks":[
+            {"name":"drc","verdict":"fail","report_sha256":"1111111111111111111111111111111111111111111111111111111111111111"},
+            {"name":"drc","verdict":"pass","report_sha256":"2222222222222222222222222222222222222222222222222222222222222222"}
+            ],"limitations":[],"pending":[]}"#;
+        let config = crate::config::Config::default();
+        let passport = crate::passport::Passport::from_json(text, &config).unwrap();
+        let found = passport.check(&config);
+        assert_eq!(found.len(), 1, "{found:?}");
+        assert_eq!(found[0].code, crate::Code::Duplicate);
+        assert_eq!(found[0].subject, "drc");
     }
 }
