@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.0.6] - A passport with nothing to verify no longer passes and duplicates are reported
+
 - **`verify` no longer succeeds when there is nothing to verify:** a passport without inputs or outputs gave "0 findings" and exit code 0 without reading a single file. It is now refused as unusable input.
 - **A check listed twice is a duplicate:** two checks of the same name, one failed and one passed, gave no finding.
 - **2 more tests** of the Rust code, for the above.
